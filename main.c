@@ -6,7 +6,7 @@ static void DrawFrame(void);
 static void DrawFilledInGrid(void);
 static void DrawBoard(void);
 
-#define SCREEN_WIDTH 400
+#define SCREEN_WIDTH 480
 #define SCREEN_HEIGHT 800
 
 #define GRID_HORIZONTAL_SIZE 12
@@ -24,7 +24,7 @@ typedef enum GridSquare { EMPTY, MOVING, FULL, BLOCK, FADING } GridSquare;
 
 static GridSquare grid [GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
 static GridSquare piece [4][4];
-static GridSquare incomingPiece [4][4];
+// static GridSquare incomingPiece [4][4];
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "blocks");
@@ -44,24 +44,18 @@ int main(void) {
 }
 
 void InitGame(void) {
-    // Initialize grid matrices
     for (int i = 0; i < GRID_HORIZONTAL_SIZE; i++) {
         for (int j = 0; j < GRID_VERTICAL_SIZE; j++) {
-            // if ((j == GRID_VERTICAL_SIZE - 1) || (i == 0) || (i == GRID_HORIZONTAL_SIZE - 1)) {
-            //     grid[i][j] = BLOCK;
-            // }
-            // else {
                 grid[i][j] = EMPTY;
-            // }
         }
     }
 
     // Initialize incoming piece matrices
-    for (int i = 0; i < 4; i++) {
-        for (int j = 0; j< 4; j++) {
-            incomingPiece[i][j] = EMPTY;
-        }
-    }
+    // for (int i = 0; i < 4; i++) {
+    //     for (int j = 0; j< 4; j++) {
+    //         incomingPiece[i][j] = EMPTY;
+    //     }
+    // }
 }
 
 int frameCount = 0;
