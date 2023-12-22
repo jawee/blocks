@@ -14,7 +14,7 @@ static void DrawBoard(void);
 
 #define SQUARE_SIZE SCREEN_WIDTH/GRID_HORIZONTAL_SIZE
 
-#define TICK_RATE 40
+#define TICK_RATE 30
 
 int piecePosX = SCREEN_WIDTH/2;
 int piecePosY = 0;
@@ -82,6 +82,26 @@ void MovePiece(int dx, int dy) {
     }
 }
 
+void MovePieceToBottom(void) {
+    int i = currX;
+    int j = currY;
+    grid[i][j] = EMPTY;
+
+    while (true) {
+        if (grid[i][j+1] == BLOCK) {
+            grid[i][j] = BLOCK;
+            NewPiece();
+            return;
+        }
+        if (j == GRID_VERTICAL_SIZE-1) {
+            grid[i][j] = BLOCK;
+            NewPiece();
+            return;
+        }
+        j++;
+    }
+}
+
 int frameCount = 0;
 void DrawFrame(void) {
     frameCount++;
@@ -96,7 +116,7 @@ void DrawFrame(void) {
         MovePiece(1, 0);
     }
     if (IsKeyPressed(KEY_DOWN)) {
-        MovePiece(1, 99);
+        MovePieceToBottom();
     }
 
     DrawBoard();
