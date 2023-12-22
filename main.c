@@ -13,7 +13,6 @@ static void DrawBoard(void);
 #define GRID_VERTICAL_SIZE 20
 
 #define SQUARE_SIZE SCREEN_WIDTH/GRID_HORIZONTAL_SIZE
-#define MOVEMENT_SPEED SQUARE_SIZE
 
 #define TICK_RATE 40
 
@@ -23,7 +22,7 @@ int piecePosY = 0;
 typedef enum GridSquare { EMPTY, MOVING, FULL, BLOCK, FADING } GridSquare;
 
 static GridSquare grid [GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
-static GridSquare piece [4][4];
+// static GridSquare piece [4][4];
 // static GridSquare incomingPiece [4][4];
 
 int main(void) {
@@ -43,47 +42,66 @@ int main(void) {
     return 0;
 }
 
+int currX = GRID_HORIZONTAL_SIZE/2;
+int currY = 0;
+void NewPiece(void) {
+    currX = GRID_HORIZONTAL_SIZE/2;
+    currY = 0;
+    grid[currX][0] = MOVING;
+}
+
 void InitGame(void) {
     for (int i = 0; i < GRID_HORIZONTAL_SIZE; i++) {
         for (int j = 0; j < GRID_VERTICAL_SIZE; j++) {
-                grid[i][j] = EMPTY;
+            grid[i][j] = EMPTY;
         }
     }
 
-    // Initialize incoming piece matrices
-    // for (int i = 0; i < 4; i++) {
-    //     for (int j = 0; j< 4; j++) {
-    //         incomingPiece[i][j] = EMPTY;
-    //     }
-    // }
+    NewPiece();
+}
+
+
+void MovePiece(int dx, int dy) {
+    int i = currX;
+    int j = currY;
+
+    if (j == GRID_VERTICAL_SIZE-1) {
+        grid[i][j] = BLOCK;
+        NewPiece();
+    }
+    if (0 <= i+dx && i+dx < GRID_HORIZONTAL_SIZE && 0 <= j+dy && j+dy < GRID_VERTICAL_SIZE) {
+        if (grid[i][j+dy] == BLOCK) {
+            grid[i][j] = BLOCK;
+            NewPiece();
+            return;
+        }
+        grid[i][j] = EMPTY;
+        currX = currX + dx;
+        currY = currY + dy;
+        grid[currX][currY] = MOVING;
+    }
 }
 
 int frameCount = 0;
 void DrawFrame(void) {
     frameCount++;
     if (frameCount%TICK_RATE == 0) {
-        if (piecePosY != SCREEN_HEIGHT-SQUARE_SIZE) {
-            piecePosY = piecePosY + MOVEMENT_SPEED;
-        }
+        MovePiece(0, 1);
     }
 
     if (IsKeyPressed(KEY_LEFT)) {
-        if (piecePosX != 0) {
-            piecePosX = piecePosX-MOVEMENT_SPEED;
-        }
+        MovePiece(-1, 0);
     }
     if (IsKeyPressed(KEY_RIGHT)) {
-        if (piecePosX != SCREEN_WIDTH-SQUARE_SIZE) {
-            piecePosX = piecePosX+MOVEMENT_SPEED;
-        }
+        MovePiece(1, 0);
     }
     if (IsKeyPressed(KEY_DOWN)) {
-        piecePosY = SCREEN_HEIGHT-SQUARE_SIZE;
+        MovePiece(1, 99);
     }
 
     DrawBoard();
     ClearBackground(BLACK);
-    DrawRectangle(piecePosX, piecePosY, SQUARE_SIZE, SQUARE_SIZE, RED);
+    // DrawRectangle(piecePosX, piecePosY, SQUARE_SIZE, SQUARE_SIZE, RED);
     DrawFilledInGrid();
 }
 
@@ -92,6 +110,10 @@ void DrawFilledInGrid(void) {
         for (int j = 0; j < GRID_VERTICAL_SIZE; ++j) {
             if (grid[i][j] == BLOCK) {
                 DrawRectangle(i*SQUARE_SIZE, j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, BLUE);
+            }
+
+            if (grid[i][j] == MOVING) {
+                DrawRectangle(i*SQUARE_SIZE, j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, RED);
             }
         }
     }
