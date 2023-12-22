@@ -1,11 +1,6 @@
 #include "raylib.h"
 #include <stdio.h>
 
-static void InitGame(void);
-static void DrawFrame(void);
-static void DrawFilledInGrid(void);
-static void DrawBoard(void);
-
 #define SCREEN_WIDTH 480
 #define SCREEN_HEIGHT 800
 
@@ -16,14 +11,17 @@ static void DrawBoard(void);
 
 #define TICK_RATE 30
 
+void InitGame(void);
+void DrawFrame(void);
+void DrawFilledInGrid(void);
+void DrawBoard(void);
+
 int piecePosX = SCREEN_WIDTH/2;
 int piecePosY = 0;
 
-typedef enum GridSquare { EMPTY, MOVING, FULL, BLOCK, FADING } GridSquare;
+typedef enum SquareType { EMPTY, MOVING, BLOCK } SquareType;
 
-static GridSquare grid [GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
-// static GridSquare piece [4][4];
-// static GridSquare incomingPiece [4][4];
+static SquareType grid [GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "blocks");
@@ -44,10 +42,12 @@ int main(void) {
 
 int currX = GRID_HORIZONTAL_SIZE/2;
 int currY = 0;
+int frameCount = 0;
 void NewPiece(void) {
     currX = GRID_HORIZONTAL_SIZE/2;
     currY = 0;
     grid[currX][0] = MOVING;
+    frameCount = 0;
 }
 
 void InitGame(void) {
@@ -102,7 +102,6 @@ void MovePieceToBottom(void) {
     }
 }
 
-int frameCount = 0;
 void DrawFrame(void) {
     frameCount++;
     if (frameCount%TICK_RATE == 0) {
@@ -147,9 +146,3 @@ void DrawBoard(void) {
         DrawLine(0, j, SCREEN_WIDTH, j, WHITE);
     }
 }
-
-
-
-
-
-
