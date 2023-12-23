@@ -3,9 +3,9 @@
 #include <stdlib.h>
 
 #define SCREEN_WIDTH 450
-#define SCREEN_HEIGHT 750
+#define SCREEN_HEIGHT TOP_BAR+BOARD_HEIGHT 
 
-#define TOP_BAR SCREEN_HEIGHT-BOARD_HEIGHT
+#define TOP_BAR 25
 
 #define BOARD_WIDTH 450
 #define BOARD_HEIGHT 720
