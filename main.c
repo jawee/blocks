@@ -21,6 +21,7 @@ void DrawFrame(void);
 void DrawFilledInGrid(void);
 void DrawBoard(void);
 void DrawTopBar(void);
+void CheckIfAnyFilledLine(void);
 
 static int score = 0;
 
@@ -54,7 +55,6 @@ void NewPiece(void) {
     currY = 0;
     grid[currX][0] = MOVING;
     frameCount = 0;
-    ++score;
 }
 
 void InitGame(void) {
@@ -128,7 +128,25 @@ void DrawFrame(void) {
     DrawTopBar();
     DrawBoard();
     ClearBackground(BLACK);
+    CheckIfAnyFilledLine();
     DrawFilledInGrid();
+}
+
+void CheckIfAnyFilledLine(void) {
+    for (int j = 0; j < GRID_VERTICAL_SIZE; j++) {
+
+        bool fullLine = true;
+        for (int i = 0; i < GRID_HORIZONTAL_SIZE; ++i) {
+            if (grid[i][j] != BLOCK) {
+                fullLine = false;
+                break;
+            }
+        }
+
+        if (fullLine) {
+            score++;
+        }
+    }
 }
 
 void DrawFilledInGrid(void) {
