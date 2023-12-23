@@ -46,9 +46,9 @@ int main(void) {
     return 0;
 }
 
-int currX = GRID_HORIZONTAL_SIZE/2;
-int currY = 0;
-int frameCount = 0;
+static int currX = GRID_HORIZONTAL_SIZE/2;
+static int currY = 0;
+static int frameCount = 0;
 
 void NewPiece(void) {
     currX = GRID_HORIZONTAL_SIZE/2;
@@ -128,8 +128,8 @@ void DrawFrame(void) {
     DrawTopBar();
     DrawBoard();
     ClearBackground(BLACK);
-    DrawFilledInGrid();
     CheckIfAnyFilledLine();
+    DrawFilledInGrid();
 }
 
 void CheckIfAnyFilledLine(void) {
