@@ -127,7 +127,6 @@ void DrawFrame(void) {
     DrawTopBar();
     DrawBoard();
     ClearBackground(BLACK);
-    // DrawRectangle(piecePosX, piecePosY, SQUARE_SIZE, SQUARE_SIZE, RED);
     DrawFilledInGrid();
 }
 
