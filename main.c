@@ -1,13 +1,18 @@
 #include "raylib.h"
 #include <stdio.h>
+#include <stdlib.h>
 
-#define SCREEN_WIDTH 480
-#define SCREEN_HEIGHT 800
+#define SCREEN_WIDTH 450
+#define SCREEN_HEIGHT 750
 
-#define GRID_HORIZONTAL_SIZE 12
-#define GRID_VERTICAL_SIZE 20
+#define TOP_BAR SCREEN_HEIGHT-BOARD_HEIGHT
 
-#define SQUARE_SIZE SCREEN_WIDTH/GRID_HORIZONTAL_SIZE
+#define BOARD_WIDTH 450
+#define BOARD_HEIGHT 720
+#define GRID_HORIZONTAL_SIZE 10
+#define GRID_VERTICAL_SIZE 16
+
+#define SQUARE_SIZE BOARD_WIDTH/GRID_HORIZONTAL_SIZE
 
 #define TICK_RATE 30
 
@@ -15,6 +20,7 @@ void InitGame(void);
 void DrawFrame(void);
 void DrawFilledInGrid(void);
 void DrawBoard(void);
+void DrawTopBar(void);
 
 int piecePosX = SCREEN_WIDTH/2;
 int piecePosY = 0;
@@ -118,6 +124,7 @@ void DrawFrame(void) {
         MovePieceToBottom();
     }
 
+    DrawTopBar();
     DrawBoard();
     ClearBackground(BLACK);
     // DrawRectangle(piecePosX, piecePosY, SQUARE_SIZE, SQUARE_SIZE, RED);
@@ -128,11 +135,11 @@ void DrawFilledInGrid(void) {
     for (int i = 0; i < GRID_HORIZONTAL_SIZE; ++i) {
         for (int j = 0; j < GRID_VERTICAL_SIZE; ++j) {
             if (grid[i][j] == BLOCK) {
-                DrawRectangle(i*SQUARE_SIZE, j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, BLUE);
+                DrawRectangle(i*SQUARE_SIZE, TOP_BAR+j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, BLUE);
             }
 
             if (grid[i][j] == MOVING) {
-                DrawRectangle(i*SQUARE_SIZE, j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, RED);
+                DrawRectangle(i*SQUARE_SIZE, TOP_BAR+j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, RED);
             }
         }
     }
@@ -140,9 +147,16 @@ void DrawFilledInGrid(void) {
 
 void DrawBoard(void) {
     for (int i = 0; i < SCREEN_WIDTH; i += SQUARE_SIZE) {
-        DrawLine(i, 0, i, SCREEN_HEIGHT, WHITE);
+        DrawLine(i, TOP_BAR, i, SCREEN_HEIGHT, WHITE);
     }
-    for (int j = 0; j < SCREEN_HEIGHT; j += SQUARE_SIZE) {
+    for (int j = TOP_BAR; j < SCREEN_HEIGHT; j += SQUARE_SIZE) {
         DrawLine(0, j, SCREEN_WIDTH, j, WHITE);
     }
+}
+
+int score = 0;
+void DrawTopBar(void) {
+    char str[80];
+    sprintf(str, "score %i", score);
+    DrawText(str, 0, 0, 20, WHITE);
 }
