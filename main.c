@@ -49,12 +49,14 @@ int main(void) {
 static int currX = GRID_HORIZONTAL_SIZE/2;
 static int currY = 0;
 static int frameCount = 0;
+static bool movingPiece = false;
 
 void NewPiece(void) {
     currX = GRID_HORIZONTAL_SIZE/2;
     currY = 0;
     grid[currX][0] = MOVING;
     frameCount = 0;
+    movingPiece = true;
 }
 
 void InitGame(void) {
@@ -74,12 +76,13 @@ void MovePiece(int dx, int dy) {
 
     if (j == GRID_VERTICAL_SIZE-1) {
         grid[i][j] = BLOCK;
-        NewPiece();
+        movingPiece = false;
+        return;
     }
     if (0 <= i+dx && i+dx < GRID_HORIZONTAL_SIZE && 0 <= j+dy && j+dy < GRID_VERTICAL_SIZE) {
         if (grid[i][j+dy] == BLOCK) {
             grid[i][j] = BLOCK;
-            NewPiece();
+            movingPiece = false;
             return;
         }
         grid[i][j] = EMPTY;
@@ -97,12 +100,12 @@ void MovePieceToBottom(void) {
     while (true) {
         if (grid[i][j+1] == BLOCK) {
             grid[i][j] = BLOCK;
-            NewPiece();
+            movingPiece = false;
             return;
         }
         if (j == GRID_VERTICAL_SIZE-1) {
             grid[i][j] = BLOCK;
-            NewPiece();
+            movingPiece = false;
             return;
         }
         j++;
@@ -110,6 +113,9 @@ void MovePieceToBottom(void) {
 }
 
 void DrawFrame(void) {
+    if (!movingPiece) {
+        NewPiece();
+    }
     frameCount++;
     if (frameCount%TICK_RATE == 0) {
         MovePiece(0, 1);
@@ -149,6 +155,11 @@ void CheckIfAnyFilledLine(void) {
 
     SquareType newGrid[GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
     
+    for (int i = 0; i < GRID_HORIZONTAL_SIZE; i++) {
+        for (int j = 0; j < GRID_VERTICAL_SIZE; j++) {
+            newGrid[i][j] = EMPTY;
+        }
+    }
     int newGridIdx = GRID_VERTICAL_SIZE-1;
     // remove filled lines and move everything above down
     for (int i = GRID_VERTICAL_SIZE-1; 0 <= i; --i) {
