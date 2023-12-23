@@ -181,7 +181,6 @@ void DrawFilledInGrid(void) {
             if (grid[i][j] == BLOCK) {
                 DrawRectangle(i*SQUARE_SIZE, TOP_BAR+j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, BLUE);
             }
-
             if (grid[i][j] == MOVING) {
                 DrawRectangle(i*SQUARE_SIZE, TOP_BAR+j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, RED);
             }
