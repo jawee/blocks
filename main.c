@@ -1,5 +1,6 @@
 #include "raylib.h"
 #include <stdio.h>
+#include <stdlib.h>
 
 #define SCREEN_WIDTH 450
 #define SCREEN_HEIGHT 750
@@ -21,8 +22,7 @@ void DrawFilledInGrid(void);
 void DrawBoard(void);
 void DrawTopBar(void);
 
-int piecePosX = SCREEN_WIDTH/2;
-int piecePosY = 0;
+static int score = 0;
 
 typedef enum SquareType { EMPTY, MOVING, BLOCK } SquareType;
 
@@ -48,11 +48,13 @@ int main(void) {
 int currX = GRID_HORIZONTAL_SIZE/2;
 int currY = 0;
 int frameCount = 0;
+
 void NewPiece(void) {
     currX = GRID_HORIZONTAL_SIZE/2;
     currY = 0;
     grid[currX][0] = MOVING;
     frameCount = 0;
+    ++score;
 }
 
 void InitGame(void) {
@@ -152,9 +154,9 @@ void DrawBoard(void) {
     }
 }
 
-int score = 0;
 void DrawTopBar(void) {
-    char str[80];
+    char* str = malloc(sizeof(char) * 50);
     sprintf(str, "score %i", score);
     DrawText(str, 0, 0, 20, WHITE);
+    free(str);
 }
