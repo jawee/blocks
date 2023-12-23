@@ -27,7 +27,7 @@ static int score = 0;
 
 typedef enum SquareType { EMPTY, MOVING, BLOCK } SquareType;
 
-static SquareType grid [GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
+SquareType grid [GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "blocks");
@@ -128,11 +128,12 @@ void DrawFrame(void) {
     DrawTopBar();
     DrawBoard();
     ClearBackground(BLACK);
-    CheckIfAnyFilledLine();
     DrawFilledInGrid();
+    CheckIfAnyFilledLine();
 }
 
 void CheckIfAnyFilledLine(void) {
+    bool filledLines[GRID_VERTICAL_SIZE];
     for (int j = 0; j < GRID_VERTICAL_SIZE; j++) {
 
         bool fullLine = true;
@@ -143,8 +144,33 @@ void CheckIfAnyFilledLine(void) {
             }
         }
 
-        if (fullLine) {
+        filledLines[j] = fullLine;
+    }
+
+    SquareType newGrid[GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
+    
+    int newGridIdx = GRID_VERTICAL_SIZE-1;
+    // remove filled lines and move everything above down
+    for (int i = GRID_VERTICAL_SIZE-1; 0 <= i; --i) {
+        if (filledLines[i]) {
             score++;
+            continue;
+        }
+        for (int x = 0; x < GRID_HORIZONTAL_SIZE; ++x) {
+            newGrid[x][newGridIdx] = grid[x][i];
+        }
+        newGridIdx--;
+    }
+
+    for (int i = 0; i < newGridIdx; ++i) {
+        for (int x = 0; x < GRID_HORIZONTAL_SIZE; ++x) {
+            newGrid[x][i] = EMPTY;
+        }
+    }
+
+    for (int i = 0; i < GRID_HORIZONTAL_SIZE; i++) {
+        for (int j = 0; j < GRID_VERTICAL_SIZE; j++) {
+            grid[i][j] = newGrid[i][j];
         }
     }
 }
