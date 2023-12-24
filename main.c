@@ -57,9 +57,12 @@ static bool movingPiece = false;
 void NewPiece(GameState* gs) {
     gs->currX = GRID_HORIZONTAL_SIZE/2;
     gs->currY = 0;
+    if (grid[gs->currX][0] == BLOCK) {
+        printf("You lost. Score: %d\n", gs->score);
+        exit(0);
+    }
     grid[gs->currX][0] = MOVING;
     frameCount = 0;
-    // movingPiece = true;
     gs->movingPiece = true;
 }
 
@@ -72,6 +75,7 @@ void InitGame(GameState* gs) {
 
     gs->currX = GRID_HORIZONTAL_SIZE/2;
     gs->currY = 0;
+    gs->score = 0;
     NewPiece(gs);
 }
 
