@@ -22,6 +22,7 @@ typedef struct {
     int score;
     int currX;
     int currY;
+    bool lost;
 } GameState;
 
 void InitGame(GameState*);
@@ -59,7 +60,8 @@ void NewPiece(GameState* gs) {
     gs->currY = 0;
     if (grid[gs->currX][0] == BLOCK) {
         printf("You lost. Score: %d\n", gs->score);
-        exit(0);
+        gs->lost = true;
+        return;
     }
     grid[gs->currX][0] = MOVING;
     frameCount = 0;
@@ -76,6 +78,7 @@ void InitGame(GameState* gs) {
     gs->currX = GRID_HORIZONTAL_SIZE/2;
     gs->currY = 0;
     gs->score = 0;
+    gs->lost = false;
     NewPiece(gs);
 }
 
@@ -123,6 +126,11 @@ void MovePieceToBottom(GameState* gs) {
 }
 
 void DrawFrame(GameState* gs) {
+    if (gs->lost) {
+        DrawText("you lost", 0, 0, 20, WHITE);
+        ClearBackground(BLACK);
+        return;
+    }
     if (!gs->movingPiece) {
         NewPiece(gs);
     }
@@ -141,9 +149,9 @@ void DrawFrame(GameState* gs) {
         MovePieceToBottom(gs);
     }
 
+    ClearBackground(BLACK);
     DrawTopBar(gs);
     DrawBoard(gs);
-    ClearBackground(BLACK);
     CheckIfAnyFilledLine(gs);
     DrawFilledInGrid(gs);
 }
