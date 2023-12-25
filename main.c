@@ -17,12 +17,15 @@
 #define TICK_RATE 30
 
 typedef enum { EMPTY, MOVING, BLOCK } SquareType;
+
 typedef struct {
     bool movingPiece;
     int score;
     int currX;
     int currY;
     bool lost;
+    int frameCount;
+    SquareType grid[GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
 } GameState;
 
 void InitGame(GameState*);
@@ -31,8 +34,6 @@ void DrawFilledInGrid(GameState*);
 void DrawBoard(GameState*);
 void DrawTopBar(GameState*);
 void CheckIfAnyFilledLine(GameState*);
-
-SquareType grid [GRID_HORIZONTAL_SIZE][GRID_VERTICAL_SIZE];
 
 int main(void) {
     InitWindow(SCREEN_WIDTH, SCREEN_HEIGHT, "blocks");
@@ -52,26 +53,23 @@ int main(void) {
     return 0;
 }
 
-static int frameCount = 0;
-static bool movingPiece = false;
-
 void NewPiece(GameState* gs) {
     gs->currX = GRID_HORIZONTAL_SIZE/2;
     gs->currY = 0;
-    if (grid[gs->currX][0] == BLOCK) {
+    if (gs->grid[gs->currX][0] == BLOCK) {
         printf("You lost. Score: %d\n", gs->score);
         gs->lost = true;
         return;
     }
-    grid[gs->currX][0] = MOVING;
-    frameCount = 0;
+    gs->grid[gs->currX][0] = MOVING;
+    gs->frameCount = 0;
     gs->movingPiece = true;
 }
 
 void InitGame(GameState* gs) {
     for (int i = 0; i < GRID_HORIZONTAL_SIZE; i++) {
         for (int j = 0; j < GRID_VERTICAL_SIZE; j++) {
-            grid[i][j] = EMPTY;
+            gs->grid[i][j] = EMPTY;
         }
     }
 
@@ -79,6 +77,7 @@ void InitGame(GameState* gs) {
     gs->currY = 0;
     gs->score = 0;
     gs->lost = false;
+    gs->frameCount = 0;
     NewPiece(gs);
 }
 
@@ -88,36 +87,36 @@ void MovePiece(GameState* gs, int dx, int dy) {
     int j = gs->currY;
 
     if (j == GRID_VERTICAL_SIZE-1) {
-        grid[i][j] = BLOCK;
+        gs->grid[i][j] = BLOCK;
         gs->movingPiece = false;
         return;
     }
     if (0 <= i+dx && i+dx < GRID_HORIZONTAL_SIZE && 0 <= j+dy && j+dy < GRID_VERTICAL_SIZE) {
-        if (grid[i][j+dy] == BLOCK) {
-            grid[i][j] = BLOCK;
+        if (gs->grid[i][j+dy] == BLOCK) {
+            gs->grid[i][j] = BLOCK;
             gs->movingPiece = false;
             return;
         }
-        grid[i][j] = EMPTY;
+        gs->grid[i][j] = EMPTY;
         gs->currX = gs->currX + dx;
         gs->currY = gs->currY + dy;
-        grid[gs->currX][gs->currY] = MOVING;
+        gs->grid[gs->currX][gs->currY] = MOVING;
     }
 }
 
 void MovePieceToBottom(GameState* gs) {
     int i = gs->currX;
     int j = gs->currY;
-    grid[i][j] = EMPTY;
+    gs->grid[i][j] = EMPTY;
 
     while (true) {
-        if (grid[i][j+1] == BLOCK) {
-            grid[i][j] = BLOCK;
+        if (gs->grid[i][j+1] == BLOCK) {
+            gs->grid[i][j] = BLOCK;
             gs->movingPiece = false;
             return;
         }
         if (j == GRID_VERTICAL_SIZE-1) {
-            grid[i][j] = BLOCK;
+            gs->grid[i][j] = BLOCK;
             gs->movingPiece = false;
             return;
         }
@@ -127,15 +126,18 @@ void MovePieceToBottom(GameState* gs) {
 
 void DrawFrame(GameState* gs) {
     if (gs->lost) {
-        DrawText("you lost", 0, 0, 20, WHITE);
+        char* str = malloc(50*sizeof(char));
+        sprintf(str, "You lost. Score: %d", gs->score);
+        DrawText(str, 0, 0, 20, WHITE);
+        free(str);
         ClearBackground(BLACK);
         return;
     }
     if (!gs->movingPiece) {
         NewPiece(gs);
     }
-    frameCount++;
-    if (frameCount%TICK_RATE == 0) {
+    gs->frameCount++;
+    if (gs->frameCount%TICK_RATE == 0) {
         MovePiece(gs, 0, 1);
     }
 
@@ -162,7 +164,7 @@ void CheckIfAnyFilledLine(GameState* gs) {
 
         bool fullLine = true;
         for (int i = 0; i < GRID_HORIZONTAL_SIZE; ++i) {
-            if (grid[i][j] != BLOCK) {
+            if (gs->grid[i][j] != BLOCK) {
                 fullLine = false;
                 break;
             }
@@ -186,7 +188,7 @@ void CheckIfAnyFilledLine(GameState* gs) {
             continue;
         }
         for (int x = 0; x < GRID_HORIZONTAL_SIZE; ++x) {
-            newGrid[x][newGridIdx] = grid[x][i];
+            newGrid[x][newGridIdx] = gs->grid[x][i];
         }
         newGridIdx--;
     }
@@ -199,7 +201,7 @@ void CheckIfAnyFilledLine(GameState* gs) {
 
     for (int i = 0; i < GRID_HORIZONTAL_SIZE; i++) {
         for (int j = 0; j < GRID_VERTICAL_SIZE; j++) {
-            grid[i][j] = newGrid[i][j];
+            gs->grid[i][j] = newGrid[i][j];
         }
     }
 }
@@ -207,10 +209,10 @@ void CheckIfAnyFilledLine(GameState* gs) {
 void DrawFilledInGrid(GameState* gs) {
     for (int i = 0; i < GRID_HORIZONTAL_SIZE; ++i) {
         for (int j = 0; j < GRID_VERTICAL_SIZE; ++j) {
-            if (grid[i][j] == BLOCK) {
+            if (gs->grid[i][j] == BLOCK) {
                 DrawRectangle(i*SQUARE_SIZE, TOP_BAR+j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, BLUE);
             }
-            if (grid[i][j] == MOVING) {
+            if (gs->grid[i][j] == MOVING) {
                 DrawRectangle(i*SQUARE_SIZE, TOP_BAR+j*SQUARE_SIZE, SQUARE_SIZE, SQUARE_SIZE, RED);
             }
         }
